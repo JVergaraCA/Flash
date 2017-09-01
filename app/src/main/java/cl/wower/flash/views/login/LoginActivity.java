@@ -1,4 +1,4 @@
-package cl.wower.flash;
+package cl.wower.flash.views.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,8 +9,11 @@ import com.firebase.ui.auth.ResultCodes;
 
 import java.util.Arrays;
 
+import cl.wower.flash.R;
+import cl.wower.flash.views.main.MainActivity;
 
-public class LoginActivity extends AppCompatActivity {
+
+public class LoginActivity extends AppCompatActivity implements AccessCallback {
 
     private static final int RC_SIGN_IN = 123;
 
@@ -21,24 +24,22 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        if (new CurrentUser().getCurrentUser() != null) {
-            logged();
-        } else {
-            signUp();
-        }
-
+        new Access(this).access();
     }
 
-
-    private void signUp() {
+    @Override
+    public void signUp() {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setProviders(Arrays.asList(
                                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()/*,
+                                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()/*,
+
                                         new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/))
+                        .setTheme(R.style.LoginTheme)
+                        .setLogo(R.mipmap.logo)
                         .build(),
                 RC_SIGN_IN);
 
@@ -56,7 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void logged() {
+    @Override
+    public void logged() {
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
